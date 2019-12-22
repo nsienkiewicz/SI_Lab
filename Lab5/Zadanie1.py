@@ -71,3 +71,6 @@ X_new[:5]
 
 plt.scatter(X_new, y)
 plt.show()
+
+# Na podstawie ostatniego przedotatniego wykresu, na którym widnieją wartości do 7 cm, cechą prawdopodobnie wybraną została cecha petal lenght. Ponadto jeden z targetów
+# jest oddzielony od reszty, co pozwala lepiej rozróżnić rośliny wedle danej cechy.
