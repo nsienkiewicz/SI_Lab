@@ -1,54 +1,53 @@
+from sklearn.datasets import fetch_openml
 from sklearn.cluster import KMeans
-from sklearn import datasets
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
-from sklearn.datasets import fetch_openml
 
-# Wczytaj przykładowy zbiór danych - dane dotyczące trzech gatunków Irysów
-iris = datasets.load_iris()
+samochody = fetch_openml('cars1')
+print("Klucze: ", samochody.keys())
+print(samochody ['feature_names'])
+print (samochody ['feature_names'][3])
 
-# Podzielmy zbiór na cechy oraz etykiety - to już znamy
-# Dla uproszczenia wybieramy tylko cechę trzecią i czwartą, tj długość i szerokość płatków
-X = iris.data[:, [2, 3]]
-y = iris.target
+# data[:, [3]] - horsepower
+# data[:, [5]] - time-to-sixty
+x = samochody.data[:, [1, 3]]
+y = samochody['target']
+y = [int(elem) for elem in y]
 
 # Używamy funkcji do podzielenia zbioru na zbiór uczący i zbiór testowy
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3)
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3)
 
 # Tworzymy klasyfikator z trzema klastrami (klasami)
-# Jak dotąd jest podobnie do Laboratorium 2
-kmn = KMeans(n_clusters=3)
-
-# Uczymy klasyfikator na danych treningowych
-# Pierwsza różnica - uczenie przebiega bez nadzoru
-# To znaczy nie pokazujemy klasyfikatorowi prawidłowych klas - gatunków kwiatów
-# Zgodnie z konfiguracją wcześniej - powiedzieliśmy tylko że chcemy w zbiorze znaleźć 3 klasy
-# Dokładny opis algorytmu: https://scikit-learn.org/stable/modules/clustering.html#k-means
-kmn.fit(X_train)
+kmn = KMeans (n_clusters=7)
+kmn.fit(x_train)
 
 # Wyciągamy punkty centralne klastrów - pokażemy je na wykresie obok punktów ze zbioru uczącego
 centra = kmn.cluster_centers_
-
 fig, ax = plt.subplots(1, 2)
-# pierwszy wykres to nasz zbiór uczący, z prawdziwymi klasami
-ax[0].scatter(X_train[:, 0], X_train[:, 1], c=y_train, s=20)
+
+# Pierwszy wykres to nasz zbiór uczący, z prawdziwymi klasami
+ax[0].scatter (x_train[:, 0], x_train[:, 1], c=y_train, s=20)
 
 # Teraz używamy danych treningowych żeby sprawdzić co klasyfikator o nich myśli
-y_pred_train = kmn.predict(X_train)
-ax[1].scatter(X_train[:, 0], X_train[:, 1], c=y_pred_train, s=20)
+y_pred_train = kmn.predict(x_train)
+ax[1].scatter (x_train[:, 0], x_train [:, 1], c=y_pred_train, s=20)
 
 # Dokładamy na drugim wykresie centra klastrów
 ax[1].scatter(centra[:, 0], centra[:, 1], c='red', s=50)
 plt.show()
 
-# Różnice kolorów pomiędzy wykresami są nieistotne
-
 # Próbujemy przewidzieć gatunki dla zbioru testowego
-y_pred = kmn.predict(X_test)
+y_pred = kmn.predict(x_test)
 
-# Nowe gatunki przewidziane przez klastrowanie
-plt.scatter(X_test[:, 0], X_test[:, 1], c=y_pred, s=20)
+plt.scatter(x_test[:, 0], x_test[:, 1], c=y_pred, s=20)
 
-# Tak jak powyżej, wyświetlamy centra klastrów
-plt.scatter(centra[:, 0], centra[:, 1], c='red', s=50)
+#Nowe gatunki przewidziane przez klastrowanie
+plt.scatter (centra[:, 0], centra[:, 1], c='red', s=50)
 plt.show()
+
+# Zadanie 2
+# Opisz własnymi słowami, jakie klasy samochodów wg Ciebie znalazły się w zbiorze
+# W zbiorze znalazły się następujące klasy samochodów, posiadające:
+# - 1 cylinder oraz 1,24s do 60-tki
+# - 3 cylindry oraz 1,28s do 60-tki
+# - 4 cylindry oraz 2,26s do 60-tki
